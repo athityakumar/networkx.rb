@@ -233,7 +233,7 @@ module NetworkX
     # @param node_1 [Object] the first node of the edge
     # @param node_2 [Object] the second node of the edge
     def get_edge_data(node_1, node_2)
-      raise KeyError, 'No such edge exists!' unless node?(node_1) && edge?(node_2)
+      raise KeyError, 'No such edge exists!' unless node?(node_1) && node?(node_2)
 
       @adj[node_1][node_2]
     end
