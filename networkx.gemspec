@@ -20,8 +20,12 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'bundler', '~> 1.15'
-  spec.add_development_dependency 'rake', '~> 10.0'
+  if RUBY_VERSION < '2.3'
+    spec.add_development_dependency 'bundler', '~> 1.3'
+  else
+    spec.add_development_dependency 'bundler', '~> 2.0'
+  end
+  spec.add_development_dependency 'rake', '>= 10.0'
   spec.add_development_dependency 'redcarpet'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rspec-its'
