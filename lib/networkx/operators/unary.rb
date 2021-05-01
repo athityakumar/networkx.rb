@@ -10,7 +10,7 @@ module NetworkX
 
     result.add_nodes(graph.nodes.map { |u, attrs| [u, attrs] })
     graph.adj.each do |u, u_edges|
-      graph.nodes.each { |v, attrs| result.add_edge(u, v, attrs) if !u_edges.key?(v) && u != v }
+      graph.nodes.each { |v, attrs| result.add_edge(u, v, **attrs) if !u_edges.key?(v) && u != v }
     end
     result
   end

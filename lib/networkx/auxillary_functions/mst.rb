@@ -27,7 +27,7 @@ module NetworkX
       edge = edges.shift
       unless union_find.connected?(edge[0][0], edge[0][1])
         union_find.union(edge[0][0], edge[0][1])
-        mst.add_edge(edge[0][0], edge[0][1], graph.adj[edge[0][0]][edge[0][1]])
+        mst.add_edge(edge[0][0], edge[0][1], **graph.adj[edge[0][0]][edge[0][1]])
       end
     end
     mst

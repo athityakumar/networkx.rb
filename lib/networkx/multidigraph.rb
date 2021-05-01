@@ -82,13 +82,13 @@ module NetworkX
     # @example
     #   graph.to_undirected
     def to_undirected
-      graph = NetworkX::Graph.new(@graph)
-      @nodes.each { |node, node_attr| graph.add_node(node, node_attr) }
+      graph = NetworkX::Graph.new(**@graph)
+      @nodes.each { |node, node_attr| graph.add_node(node, **node_attr) }
       @adj.each do |node_1, node_1_edges|
         node_1_edges.each do |node_2, node_1_node_2|
           edge_attrs = {}
           node_1_node_2.each { |_key, attrs| edge_attrs.merge!(attrs) }
-          graph.add_edge(node_1, node_2, edge_attrs)
+          graph.add_edge(node_1, node_2, **edge_attrs)
         end
       end
       graph
@@ -99,13 +99,13 @@ module NetworkX
     # @example
     #   graph.to_directed
     def to_directed
-      graph = NetworkX::DiGraph.new(@graph)
-      @nodes.each { |node, node_attr| graph.add_node(node, node_attr) }
+      graph = NetworkX::DiGraph.new(**@graph)
+      @nodes.each { |node, node_attr| graph.add_node(node, **node_attr) }
       @adj.each do |node_1, node_1_edges|
         node_1_edges.each do |node_2, node_1_node_2|
           edge_attrs = {}
           node_1_node_2.each { |_key, attrs| edge_attrs.merge!(attrs) }
-          graph.add_edge(node_1, node_2, edge_attrs)
+          graph.add_edge(node_1, node_2, **edge_attrs)
         end
       end
       graph
@@ -116,13 +116,13 @@ module NetworkX
     # @example
     #   graph.to_multigraph
     def to_multigraph
-      graph = NetworkX::MultiGraph.new(@graph)
-      @nodes.each { |node, node_attr| graph.add_node(node, node_attr) }
+      graph = NetworkX::MultiGraph.new(**@graph)
+      @nodes.each { |node, node_attr| graph.add_node(node, **node_attr) }
       @adj.each do |node_1, node_1_edges|
         node_1_edges.each_key do |node_2, node_1_node_2|
           edge_attrs = {}
-          node_1_node_2.each { |_key, attrs| graph.add_edge(node_1, node_2, attrs) }
-          graph.add_edge(node_1, node_2, edge_attrs)
+          node_1_node_2.each { |_key, attrs| graph.add_edge(node_1, node_2, **attrs) }
+          graph.add_edge(node_1, node_2, **edge_attrs)
         end
       end
       graph
@@ -133,10 +133,10 @@ module NetworkX
     # @example
     #   graph.reverse
     def reverse
-      new_graph = NetworkX::MultiDiGraph.new(@graph)
-      @nodes.each { |node, attrs| new_graph.add_node(node, attrs) }
+      new_graph = NetworkX::MultiDiGraph.new(**@graph)
+      @nodes.each { |node, attrs| new_graph.add_node(node, **attrs) }
       @adj.each do |u, u_edges|
-        u_edges.each { |v, uv_attrs| uv_attrs.each { |_k, edge_attrs| new_graph.add_edge(v, u, edge_attrs) } }
+        u_edges.each { |v, uv_attrs| uv_attrs.each { |_k, edge_attrs| new_graph.add_edge(v, u, **edge_attrs) } }
       end
       new_graph
     end
@@ -198,13 +198,13 @@ module NetworkX
     def subgraph(nodes)
       case nodes
       when Array, Set
-        sub_graph = NetworkX::MultiDiGraph.new(@graph)
+        sub_graph = NetworkX::MultiDiGraph.new(**@graph)
         nodes.each do |u, _|
           raise KeyError, "#{u} does not exist in the current graph!" unless @nodes.key?(u)
 
-          sub_graph.add_node(u, @nodes[u])
+          sub_graph.add_node(u, **@nodes[u])
           @adj[u].each do |v, edge_val|
-            edge_val.each { |_, keyval| sub_graph.add_edge(u, v, keyval) if @adj[u].key?(v) && nodes.include?(v) }
+            edge_val.each { |_, keyval| sub_graph.add_edge(u, v, **keyval) if @adj[u].key?(v) && nodes.include?(v) }
           end
           return sub_graph
         end
@@ -225,14 +225,14 @@ module NetworkX
     def edge_subgraph(edges)
       case edges
       when Array, Set
-        sub_graph = NetworkX::MultiDiGraph.new(@graph)
+        sub_graph = NetworkX::MultiDiGraph.new(**@graph)
         edges.each do |u, v|
           raise KeyError, "Edge between #{u} and #{v} does not exist in the graph!" unless @nodes.key?(u)\
                                                                                     && @adj[u].key?(v)
 
-          sub_graph.add_node(u, @nodes[u])
-          sub_graph.add_node(v, @nodes[v])
-          @adj[u][v].each { |_, keyval| sub_graph.add_edge(u, v, keyval) }
+          sub_graph.add_node(u, **@nodes[u])
+          sub_graph.add_node(v, **@nodes[v])
+          @adj[u][v].each { |_, keyval| sub_graph.add_edge(u, v, **keyval) }
         end
         return sub_graph
       else

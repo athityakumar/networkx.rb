@@ -50,7 +50,7 @@ module NetworkX
     def add_edges(edges)
       case edges
       when Array
-        edges.each { |node_1, node_2, **attrs| add_edge(node_1, node_2, attrs) }
+        edges.each { |node_1, node_2, attrs| add_edge(node_1, node_2, **(attrs || {})) }
       else
         raise ArgumentError, 'Expected argument to be an Array of edges, '\
                              "received #{edges.class.name} instead."
@@ -82,7 +82,7 @@ module NetworkX
     def add_nodes(nodes)
       case nodes
       when Set, Array
-        nodes.each { |node, **node_attrs| add_node(node, node_attrs) }
+        nodes.each { |node, node_attrs| add_node(node, **(node_attrs || {})) }
       else
         raise ArgumentError, 'Expected argument to be an Array or Set of nodes, '\
                              "received #{nodes.class.name} instead."
@@ -295,13 +295,13 @@ module NetworkX
     def subgraph(nodes)
       case nodes
       when Array, Set
-        sub_graph = NetworkX::Graph.new(@graph)
+        sub_graph = NetworkX::Graph.new(**@graph)
         nodes.each do |u, _|
           raise KeyError, "#{u} does not exist in the current graph!" unless @nodes.key?(u)
 
-          sub_graph.add_node(u, @nodes[u])
+          sub_graph.add_node(u, **@nodes[u])
           @adj[u].each do |v, edge_val|
-            sub_graph.add_edge(u, v, edge_val) if @adj[u].key?(v) && nodes.include?(v)
+            sub_graph.add_edge(u, v, **edge_val) if @adj[u].key?(v) && nodes.include?(v)
           end
           return sub_graph
         end
@@ -322,14 +322,14 @@ module NetworkX
     def edge_subgraph(edges)
       case edges
       when Array, Set
-        sub_graph = NetworkX::Graph.new(@graph)
+        sub_graph = NetworkX::Graph.new(**@graph)
         edges.each do |u, v|
           raise KeyError, "Edge between #{u} and #{v} does not exist in the graph!" unless @nodes.key?(u)\
                                                                                     && @adj[u].key?(v)
 
-          sub_graph.add_node(u, @nodes[u])
-          sub_graph.add_node(v, @nodes[v])
-          sub_graph.add_edge(u, v, @adj[u][v])
+          sub_graph.add_node(u, **@nodes[u])
+          sub_graph.add_node(v, **@nodes[v])
+          sub_graph.add_edge(u, v, **@adj[u][v])
         end
         return sub_graph
       else

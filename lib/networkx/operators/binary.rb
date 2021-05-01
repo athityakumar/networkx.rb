@@ -26,17 +26,17 @@ module NetworkX
     end]
 
     graph.nodes.each do |u, attrs|
-      new_graph.add_node(u.to_s + idx_dict[u].to_s, attrs)
+      new_graph.add_node(u.to_s + idx_dict[u].to_s, **attrs)
     end
 
     graph.adj.each do |u, u_edges|
       u_edges.each do |v, uv_attrs|
         if graph.multigraph?
           uv_attrs.each do |_k, attrs|
-            new_graph.add_edge(u.to_s + idx_dict[u].to_s, v.to_s + idx_dict[v].to_s, attrs)
+            new_graph.add_edge(u.to_s + idx_dict[u].to_s, v.to_s + idx_dict[v].to_s, **attrs)
           end
         else
-          new_graph.add_edge(u.to_s + idx_dict[u].to_s, v.to_s + idx_dict[v].to_s, uv_attrs)
+          new_graph.add_edge(u.to_s + idx_dict[u].to_s, v.to_s + idx_dict[v].to_s, **uv_attrs)
         end
       end
     end
@@ -58,17 +58,17 @@ module NetworkX
     raise ArgumentError, 'Arguments must be both Graphs or MultiGraphs!' unless g_1.multigraph? == g_2.multigraph?
     raise ArgumentError, 'Node sets must be equal!' unless (g_1.nodes.keys - g_2.nodes.keys).empty?
 
-    g_1.nodes.each { |u, attrs| result.add_node(u, attrs) }
+    g_1.nodes.each { |u, attrs| result.add_node(u, **attrs) }
 
     if g_1.number_of_edges <= g_2.number_of_edges
       g_1.adj.each do |u, u_edges|
         u_edges.each do |v, uv_attrs|
           if g_1.multigraph?
             uv_attrs.each do |k, attrs|
-              result.add_edge(u, v, attrs) if g_2.edge?(u, v, k)
+              result.add_edge(u, v, **attrs) if g_2.edge?(u, v, k)
             end
           elsif g_2.edge?(u, v)
-            result.add_edge(u, v, uv_attrs)
+            result.add_edge(u, v, **uv_attrs)
           end
         end
       end
@@ -77,7 +77,7 @@ module NetworkX
         u_edges.each do |v, uv_attrs|
           if g_2.multigraph?
             uv_attrs.each do |k, attrs|
-              result.add_edge(u, v, attrs) if g_1.edge?(u, v, k)
+              result.add_edge(u, v, **attrs) if g_1.edge?(u, v, k)
             end
           elsif g_1.edge?(u, v)
             result.add_edge(u, v, uv_attrs)
@@ -103,16 +103,16 @@ module NetworkX
     raise ArgumentError, 'Arguments must be both Graphs or MultiGraphs!' unless g_1.multigraph? == g_2.multigraph?
     raise ArgumentError, 'Node sets must be equal!' unless (g_1.nodes.keys - g_2.nodes.keys).empty?
 
-    g_1.nodes.each { |u, attrs| result.add_node(u, attrs) }
+    g_1.nodes.each { |u, attrs| result.add_node(u, **attrs) }
 
     g_1.adj.each do |u, u_edges|
       u_edges.each do |v, uv_attrs|
         if g_1.multigraph?
           uv_attrs.each do |k, attrs|
-            result.add_edge(u, v, attrs) unless g_2.edge?(u, v, k)
+            result.add_edge(u, v, **attrs) unless g_2.edge?(u, v, k)
           end
         else
-          result.add_edge(u, v, uv_attrs) unless g_2.edge?(u, v)
+          result.add_edge(u, v, **uv_attrs) unless g_2.edge?(u, v)
         end
       end
     end
@@ -134,16 +134,16 @@ module NetworkX
     raise ArgumentError, 'Arguments must be both Graphs or MultiGraphs!' unless g_1.multigraph? == g_2.multigraph?
     raise ArgumentError, 'Node sets must be equal!' unless (g_1.nodes.keys - g_2.nodes.keys).empty?
 
-    g_1.nodes.each { |u, attrs| result.add_node(u, attrs) }
+    g_1.nodes.each { |u, attrs| result.add_node(u, **attrs) }
 
     g_1.adj.each do |u, u_edges|
       u_edges.each do |v, uv_attrs|
         if g_1.multigraph?
           uv_attrs.each do |k, attrs|
-            result.add_edge(u, v, attrs) unless g_2.edge?(u, v, k)
+            result.add_edge(u, v, **attrs) unless g_2.edge?(u, v, k)
           end
         else
-          result.add_edge(u, v, uv_attrs) unless g_2.edge?(u, v)
+          result.add_edge(u, v, **uv_attrs) unless g_2.edge?(u, v)
         end
       end
     end
@@ -152,10 +152,10 @@ module NetworkX
       u_edges.each do |v, uv_attrs|
         if g_2.multigraph?
           uv_attrs.each do |k, attrs|
-            result.add_edge(u, v, attrs) unless g_1.edge?(u, v, k)
+            result.add_edge(u, v, **attrs) unless g_1.edge?(u, v, k)
           end
         else
-          result.add_edge(u, v, uv_attrs) unless g_1.edge?(u, v)
+          result.add_edge(u, v, **uv_attrs) unless g_1.edge?(u, v)
         end
       end
     end
@@ -180,11 +180,11 @@ module NetworkX
     result.add_nodes(g_2.nodes.map { |u, attrs| [u, attrs] })
 
     if g_1.multigraph?
-      g_1.adj.each { |u, e| e.each { |v, uv_edges| uv_edges.each_value { |attrs| result.add_edge(u, v, attrs) } } }
-      g_2.adj.each { |u, e| e.each { |v, uv_edges| uv_edges.each_value { |attrs| result.add_edge(u, v, attrs) } } }
+      g_1.adj.each { |u, e| e.each { |v, uv_edges| uv_edges.each_value { |attrs| result.add_edge(u, v, **attrs) } } }
+      g_2.adj.each { |u, e| e.each { |v, uv_edges| uv_edges.each_value { |attrs| result.add_edge(u, v, **attrs) } } }
     else
-      g_1.adj.each { |u, u_edges| u_edges.each { |v, attrs| result.add_edge(u, v, attrs) } }
-      g_2.adj.each { |u, u_edges| u_edges.each { |v, attrs| result.add_edge(u, v, attrs) } }
+      g_1.adj.each { |u, u_edges| u_edges.each { |v, attrs| result.add_edge(u, v, **attrs) } }
+      g_2.adj.each { |u, u_edges| u_edges.each { |v, attrs| result.add_edge(u, v, **attrs) } }
     end
     result
   end
